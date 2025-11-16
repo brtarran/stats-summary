@@ -558,16 +558,6 @@ production_revised <- function() {
     
   df_filtered <- df %>%
     filter(category == category_select) %>%
-    filter(!production_type %in% c('all', 'inward_investment_and_co_production')) %>%
-    # For each year, if 'revised' exists, keep only 'revised' or 'first_reported' if 'revised' doesn't exist
-    group_by(label, production_type) %>%
-    filter(
-      !(status == 'first_reported' & any(status == 'revised'))  # Exclude 'first_reported' if 'revised' is present for the same year
-    ) %>%
-    ungroup()
-
-  df_total <- df %>%
-    filter(category == category_select) %>%
     filter(production_type == 'all') %>%
     # For each year, if 'revised' exists, keep only 'revised' or 'first_reported' if 'revised' doesn't exist
     group_by(label, production_type) %>%
@@ -578,7 +568,7 @@ production_revised <- function() {
 
   ggplot(df_filtered, aes(x = label, y = .data[[metric]])) +
     geom_bar(stat = 'identity', , fill = category_colour) +  
-    geom_text(data = df_total, aes(label = scales::comma(round(.data[[metric]], 0)), 
+    geom_text(aes(label = scales::comma(round(.data[[metric]], 0)), 
               vjust = 1.5), 
               color = 'white') + 
     labs(
