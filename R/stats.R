@@ -705,7 +705,7 @@ certification <- function() {
   category_display <- category_display_names[[category_select]]
 
   df <- data_and_vars$data %>%
-    filter(quarter <= data_and_vars$latest_quarter) %>%
+    filter(quarter == data_and_vars$latest_quarter) %>%
     group_by(year, label) %>%
     ungroup()
 
