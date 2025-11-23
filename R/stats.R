@@ -558,16 +558,6 @@ production_revised <- function() {
     
   df_filtered <- df %>%
     filter(category == category_select) %>%
-    filter(!production_type %in% c('all', 'inward_investment_and_co_production')) %>%
-    # For each year, if 'revised' exists, keep only 'revised' or 'first_reported' if 'revised' doesn't exist
-    group_by(label, production_type) %>%
-    filter(
-      !(status == 'first_reported' & any(status == 'revised'))  # Exclude 'first_reported' if 'revised' is present for the same year
-    ) %>%
-    ungroup()
-
-  df_total <- df %>%
-    filter(category == category_select) %>%
     filter(production_type == 'all') %>%
     # For each year, if 'revised' exists, keep only 'revised' or 'first_reported' if 'revised' doesn't exist
     group_by(label, production_type) %>%
@@ -578,7 +568,7 @@ production_revised <- function() {
 
   ggplot(df_filtered, aes(x = label, y = .data[[metric]])) +
     geom_bar(stat = 'identity', , fill = category_colour) +  
-    geom_text(data = df_total, aes(label = scales::comma(round(.data[[metric]], 0)), 
+    geom_text(aes(label = scales::comma(round(.data[[metric]], 0)), 
               vjust = 1.5), 
               color = 'white') + 
     labs(
@@ -623,9 +613,9 @@ production_breakdown_revised <- function() {
     group_by(year, label) %>%
     mutate(label = factor(label, levels = unique(label[order(year, month_num)])))
 
-  df_filtered <- df %>%
+  df_total <- df %>%
     filter(category == category_select) %>%
-    filter(!production_type %in% c('all', 'inward_investment_and_co_production')) %>%
+    filter(production_type == 'all') %>%
     # For each year, if 'revised' exists, keep only 'revised' or 'first_reported' if 'revised' doesn't exist
     group_by(label, production_type) %>%
     filter(
@@ -633,8 +623,24 @@ production_breakdown_revised <- function() {
     ) %>%
     ungroup()
 
+  df_filtered <- df %>%
+    filter(category == category_select, production_type != 'all') %>%
+    # For each year, if 'revised' exists, keep only 'revised' or 'first_reported' if 'revised' doesn't exist
+    group_by(label, production_type) %>%
+    filter(
+      !(status == 'first_reported' & any(status == 'revised'))  # Exclude 'first_reported' if 'revised' is present for the same year
+    ) %>%
+    ungroup()
+
+  df_filtered <- df_filtered %>%
+    group_by(label) %>%
+    filter(
+      !(production_type == 'inward_investment_and_co_production' & any(production_type %in% c('inward_investment', 'co_production')))
+    ) %>%
+    ungroup()
+
   ggplot(df_filtered, aes(x = label, y = .data[[metric]])) +
-    geom_bar(stat = 'identity', fill = 'darkgrey') +  
+    geom_bar(data = df_total, stat = 'identity', fill = 'darkgrey') +  
     geom_line(aes(group = production_type), color = category_colour, size = 1) + 
     geom_point(color = category_colour, size = 2) +  # Add points to highlight values
     geom_text_repel(
@@ -647,17 +653,24 @@ production_breakdown_revised <- function() {
       box.padding = 0.2,  # Adds slight padding around text
       segment.color = NA  # Removes connector lines
     ) +
-    geom_text(
-      data = df_filtered %>% filter(year == data_and_vars$latest_year) %>%
+    geom_text_repel(
+      data = df_filtered %>% 
+      group_by(production_type) %>% 
+      filter(year == max(year)) %>%
       mutate(production_type = recode(production_type, 
         'inward_investment' = 'INW',
         'co_production' = 'COP',  
-        'domestic_uk' = 'DOM'
+        'domestic_uk' = 'DOM',
+        'inward_investment_and_co_production' = 'INW+COP'
       )),
-      aes(label = production_type),
+      aes(x = label,
+          y = .data[[metric]],
+          label = production_type),
       color = category_colour, 
-      hjust = 0, vjust = 0.5, size = 5, fontface = "bold",
-      position = position_nudge(x = 0.1)
+      size = 5, fontface = "bold",
+      direction = 'both',
+      nudge_x = 0.3,
+      segment.color = NA
     ) +  
     labs(
       title = paste0("UK production ", metric_display, ", in the year ending (YE) ", data_and_vars$latest_month),
@@ -705,7 +718,7 @@ certification <- function() {
   category_display <- category_display_names[[category_select]]
 
   df <- data_and_vars$data %>%
-    filter(quarter <= data_and_vars$latest_quarter) %>%
+    filter(quarter == data_and_vars$latest_quarter) %>%
     group_by(year, label) %>%
     ungroup()
 
