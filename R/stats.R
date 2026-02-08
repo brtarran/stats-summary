@@ -81,6 +81,7 @@ load_data <- function(file_path, sheet_name, type = c("boxoffice", "production")
 uk_box_office <- function() {
   df <- data_and_vars$data %>%
     filter(quarter == data_and_vars$latest_quarter) %>%
+    filter(year >= data_and_vars$latest_year - 6 & year <= data_and_vars$latest_year) %>%
     group_by(year, label) %>%
     ungroup() %>%
     # Order labels chronologically using year + month_num
@@ -105,6 +106,7 @@ uk_box_office <- function() {
 uk_roi_box_office <- function() {
   df <- data_and_vars$data %>%
     filter(quarter == data_and_vars$latest_quarter) %>%
+    filter(year >= data_and_vars$latest_year - 6 & year <= data_and_vars$latest_year) %>%
     group_by(year, label) %>%
     ungroup() %>%
     # Order labels chronologically using year + month_num
@@ -203,6 +205,7 @@ uk_market_share_indie <- function() {
 uk_market_share_percent <- function() {
   df <- data_and_vars$data %>%
     filter(quarter == data_and_vars$latest_quarter) %>%
+    filter(year >= data_and_vars$latest_year - 6 & year <= data_and_vars$latest_year) %>%
     group_by(year, label) %>%
     ungroup() %>%
     # Order labels chronologically using year + month_num, removing duplicates
@@ -318,6 +321,7 @@ all_production_first <- function() {
   # Filter data for all years but only latest_quarter
   df <- data_and_vars$data %>%
     filter(quarter == data_and_vars$latest_quarter) %>%
+    filter(year >= data_and_vars$latest_year - 4 & year <= data_and_vars$latest_year) %>%
     group_by(year, label) %>%
     mutate(label = factor(label, levels = unique(label[order(year, month_num)])))
 
@@ -325,6 +329,7 @@ all_production_first <- function() {
     filter(production_type == 'all') %>%
     group_by(label, category) %>%
     filter(!(status == 'first_reported' & any(status == 'revised'))) %>%
+    slice_max(release_id, n = 1) %>% # keep only 'revised' data with latest 'release_id'
     ungroup()
 
   df_first <- df %>%
@@ -378,6 +383,7 @@ all_production_revised <- function() {
   # Filter data for all years but only latest_quarter
   df <- data_and_vars$data %>%
     filter(quarter == data_and_vars$latest_quarter) %>%
+    filter(year >= data_and_vars$latest_year - 4 & year <= data_and_vars$latest_year) %>%
     group_by(year, label) %>%
     mutate(label = factor(label, levels = unique(label[order(year, month_num)])))
 
@@ -385,6 +391,7 @@ all_production_revised <- function() {
     filter(production_type == 'all') %>%
     group_by(label, category) %>%
     filter(!(status == 'first_reported' & any(status == 'revised'))) %>%
+    slice_max(release_id, n = 1) %>%
     ungroup()
 
   df_first <- df %>%
@@ -440,6 +447,7 @@ film_hetv_production_revised <- function() {
   # Filter data for all years but only latest_quarter
   df <- data_and_vars$data %>%
     filter(quarter == data_and_vars$latest_quarter) %>%
+    filter(year >= data_and_vars$latest_year - 4 & year <= data_and_vars$latest_year) %>%
     group_by(year, label) %>%
     mutate(label = factor(label, levels = unique(label[order(year, month_num)])))
     
@@ -450,6 +458,7 @@ film_hetv_production_revised <- function() {
     filter(
       !(status == 'first_reported' & any(status == 'revised'))  # Exclude 'first_reported' if 'revised' is present for the same year
     ) %>%
+    slice_max(release_id, n = 1) %>%
     ungroup()
 
   ggplot(df_filtered, aes(x = label, y = .data[[metric]], fill = category)) +
@@ -487,6 +496,7 @@ film_hetv_production_revised_percentage <- function() {
   # Filter data for all years but only latest_quarter
   df <- data_and_vars$data %>%
     filter(quarter == data_and_vars$latest_quarter) %>%
+    filter(year >= data_and_vars$latest_year - 4 & year <= data_and_vars$latest_year) %>%
     group_by(year, label) %>%
     mutate(label = factor(label, levels = unique(label[order(year, month_num)])))
      
@@ -497,6 +507,7 @@ film_hetv_production_revised_percentage <- function() {
     filter(
       !(status == 'first_reported' & any(status == 'revised'))  # Exclude 'first_reported' if 'revised' is present for the same year
     ) %>%
+    slice_max(release_id, n = 1) %>%
     ungroup() %>%
     # Calculate the total spend per year
     group_by(label) %>%
@@ -553,6 +564,7 @@ production_revised <- function() {
   # Filter data for all years but only latest_quarter
   df <- data_and_vars$data %>%
     filter(quarter == data_and_vars$latest_quarter) %>%
+    filter(year >= data_and_vars$latest_year - 4 & year <= data_and_vars$latest_year) %>%
     group_by(year, label) %>%
     mutate(label = factor(label, levels = unique(label[order(year, month_num)])))
     
@@ -564,6 +576,7 @@ production_revised <- function() {
     filter(
       !(status == 'first_reported' & any(status == 'revised'))  # Exclude 'first_reported' if 'revised' is present for the same year
     ) %>%
+    slice_max(release_id, n = 1) %>%
     ungroup()
 
   ggplot(df_filtered, aes(x = label, y = .data[[metric]])) +
@@ -610,6 +623,7 @@ production_breakdown_revised <- function() {
   # Filter data for all years but only latest_quarter
   df <- data_and_vars$data %>%
     filter(quarter == data_and_vars$latest_quarter) %>%
+    filter(year >= data_and_vars$latest_year - 4 & year <= data_and_vars$latest_year) %>%
     group_by(year, label) %>%
     mutate(label = factor(label, levels = unique(label[order(year, month_num)])))
 
@@ -621,6 +635,7 @@ production_breakdown_revised <- function() {
     filter(
       !(status == 'first_reported' & any(status == 'revised'))  # Exclude 'first_reported' if 'revised' is present for the same year
     ) %>%
+    slice_max(release_id, n = 1) %>%
     ungroup()
 
   df_filtered <- df %>%
@@ -630,6 +645,7 @@ production_breakdown_revised <- function() {
     filter(
       !(status == 'first_reported' & any(status == 'revised'))  # Exclude 'first_reported' if 'revised' is present for the same year
     ) %>%
+    slice_max(release_id, n = 1) %>%
     ungroup()
 
   df_filtered <- df_filtered %>%

@@ -3,7 +3,7 @@ A slide deck capturing headline statistics from each of the British Film Institu
 
 ## Workflow
 1. For each new quarterly release, create a new branch from main, in the format `q#-YEAR` -- e.g. `q4-2025`.
-2. Use ![decktape](https://github.com/astefanutti/decktape) to save the previous quarter's slide deck as a PDF:
+2. Use [decktape](https://github.com/astefanutti/decktape) to save the previous quarter's slide deck as a PDF, e.g. for Q3 2025:
 
 ```
 $ decktape https://brtarran.github.io/stats-summary archived_presentations/bfi-q3-2025-stats.pdf
