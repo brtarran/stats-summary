@@ -78,7 +78,7 @@ load_data <- function(file_path, sheet_name, type = c("boxoffice", "production")
 
 # Box office
 
-uk_box_office <- function() {
+uk_box_office <- function(return_type = "plot") {
   df <- data_and_vars$data %>%
     filter(quarter == data_and_vars$latest_quarter) %>%
     filter(year >= data_and_vars$latest_year - 6 & year <= data_and_vars$latest_year) %>%
@@ -87,6 +87,37 @@ uk_box_office <- function() {
     # Order labels chronologically using year + month_num
     mutate(label = factor(label, levels = label[order(year, month_num)]))
 
+  if (return_type == "data") {
+    # Calculate values for text
+    latest <- df %>%
+      filter(year == data_and_vars$latest_year,
+             month == data_and_vars$latest_month) %>%
+      summarise(revenue = sum(uk_box_office_m, na.rm = TRUE)) %>%
+      pull(revenue)
+    
+    prev_year <- df %>%
+      filter(year == data_and_vars$latest_year - 1,
+             month == data_and_vars$latest_month) %>%
+      summarise(revenue = sum(uk_box_office_m, na.rm = TRUE)) %>%
+      pull(revenue)
+    
+    year_2019 <- df %>%
+      filter(year == 2019,
+             month == data_and_vars$latest_month) %>%
+      summarise(revenue = sum(uk_box_office_m, na.rm = TRUE)) %>%
+      pull(revenue)
+    
+    pct_change_prev <- round(((latest - prev_year) / prev_year) * 100)
+    pct_change_2019 <- round(((latest - year_2019) / year_2019) * 100)
+    
+    return(list(
+      current = latest,
+      pct_change_prev = pct_change_prev,
+      pct_change_2019 = pct_change_2019
+    ))
+  }
+  
+  # Return plot (default)
   ggplot(df, aes(x = label, y = uk_box_office_m)) +
     geom_bar(stat = 'identity', fill = '#e50076') +
     geom_text(aes(label = scales::comma(round(uk_box_office_m, 0))), 
@@ -249,7 +280,7 @@ uk_market_share_percent <- function() {
 
 # Admissions
 
-uk_admissions <- function() {
+uk_admissions <- function(return_type = "plot") {
   df <- data_and_vars$data %>%
     filter(quarter <= data_and_vars$latest_quarter) %>%
     group_by(year, label) %>%
@@ -261,7 +292,32 @@ uk_admissions <- function() {
     ) %>%
     # Order labels chronologically
     mutate(label = factor(label, levels = unique(label[order(year, month_num)])))
+    
+  if (return_type == "data") {
+    # Calculate values for text
+    latest <- df %>%
+      filter(year == data_and_vars$latest_year)%>%
+      pull(admissions_m)
+    
+    prev_year <- df %>%
+      filter(year == data_and_vars$latest_year - 1) %>%
+      pull(admissions_m)
+    
+    year_2019 <- df %>%
+      filter(year == 2019) %>%
+      pull(admissions_m)
+    
+    pct_change_prev <- round(((latest - prev_year) / prev_year) * 100)
+    pct_change_2019 <- round(((latest - year_2019) / year_2019) * 100)
+    
+    return(list(
+      current = latest,
+      pct_change_prev = pct_change_prev,
+      pct_change_2019 = pct_change_2019
+    ))
+  }
   
+  # Return plot (default)
   ggplot(df, aes(x = label, y = admissions_m)) +
     geom_bar(stat = 'identity', fill = '#e50076') +
     geom_text(aes(label = scales::comma(round(admissions_m, 0))),

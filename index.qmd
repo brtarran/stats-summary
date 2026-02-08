@@ -32,11 +32,20 @@ file_path <- here::here('data/bfi_stats_release_data.xlsx')
 
 ##
 
+```{r}
+#| label: uk-box-office-text
+
+sheet_name <- "uk_box_office"
+type <- "boxoffice"
+data_and_vars <- load_data(file_path, sheet_name, type)
+box_office_data <- uk_box_office(return_type = "data")
+```
+
 <div id="left">
 
-In the UK in the period January to September (Q1-3) 2025:
+In the UK in the period January to `r data_and_vars$latest_month` (`r data_and_vars$latest_period`) `r data_and_vars$latest_year`:
 
-* Box office revenue was £751 million, up 10% on Q1-3 2024 and down 18% on Q1-3 2019.
+* Box office revenue was £`r scales::comma(round(box_office_data$current))` million, `r ifelse(box_office_data$pct_change_prev >= 0, "up", "down")` `r abs(box_office_data$pct_change_prev)`% on `r data_and_vars$latest_year - 1` and `r ifelse(box_office_data$pct_change_2019 >= 0, "up", "down")` `r abs(box_office_data$pct_change_2019)`% on 2019.
 
 </div>
 
@@ -49,9 +58,6 @@ In the UK in the period January to September (Q1-3) 2025:
 #| fig-align: center
 #| fig-dpi: 150
 
-sheet_name <- "uk_box_office"
-type <- "boxoffice"
-data_and_vars <- load_data(file_path, sheet_name, type)
 uk_box_office()
 ```
 
@@ -59,11 +65,18 @@ uk_box_office()
 
 ## 
 
+```{r}
+#| label: uk-admissions-text
+
+sheet_name <- 'uk_admissions'
+data_and_vars <- load_data(file_path, sheet_name, type)
+uk_admissions_data <- uk_admissions(return_type = "data")
+```
+
 <div id="left">
 
-* There were 93 million cinema admissions, 4% higher than in Q1-3 2024 and 28% lower
-than in Q1-3 2019.
-* Figures are for all films on release, including event releases and those that started their release prior to the Q1-3 period.
+* There were `r scales::comma(round(uk_admissions_data$current))` million cinema admissions, `r ifelse(uk_admissions_data$pct_change_prev >= 0, "up", "down")` `r abs(uk_admissions_data$pct_change_prev)`% on `r data_and_vars$latest_year - 1` and `r ifelse(uk_admissions_data$pct_change_2019 >= 0, "up", "down")` `r abs(uk_admissions_data$pct_change_2019)`% on 2019.
+* Figures are for all films on release, including event releases and those that started their release prior to the `r data_and_vars$latest_period` period.
 
 </div>
 
@@ -76,8 +89,6 @@ than in Q1-3 2019.
 #| fig-align: center
 #| fig-dpi: 150
 
-sheet_name <- 'uk_admissions'
-data_and_vars <- load_data(file_path, sheet_name, type)
 uk_admissions()
 ```
 </div>
@@ -86,7 +97,7 @@ uk_admissions()
 
 <div id="left">
 
-* July recorded 2025's highest monthly admissions to date, at 13 million.
+* July recorded 2025's highest monthly admissions, at 13 million.
 * *Jurassic World Rebirth* and *Superman* were the highest earning releases of that month.
 
 </div>
@@ -113,8 +124,7 @@ uk_admissions_month()
 
 At the UK and Republic of Ireland (ROI) box office:
 
-* Revenue for films released in Q1-3 2025 was £684.4 million, up 1% on Q1-3 2024 and
-down 25% on Q1-3 2019.
+* Revenue for films released in `r data_and_vars$latest_period` `r data_and_vars$latest_year` was £1.0 billion, unchanged from 2024 and down 21% on 2019.
 * This excludes event releases.
 
 </div>
@@ -163,8 +173,8 @@ uk_market_share_indie()
 
 <div id="left">
 
-* The total market share of all UK qualifying films was 43%, almost 12 percentage points higher than Q1-3 2024’s UK qualifying share.
-* *Note*: 2025 figures in chart sum to 44% due to rounding.
+* The total market share of all UK qualifying films was 40.5%, almost 1 percentage point higher than 2024’s UK qualifying share.
+<!-- * *Note*: 2025 figures in chart sum to 44% due to rounding. -->
 
 </div>
 
@@ -199,9 +209,9 @@ metric <- 'UK_spend_m'
 
 <div id="left">
 
-In the UK, in the 12 months to September 2025: 
+In the UK, in the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year`: 
 
-* The combined total spend on film and high-end television (HETV) production was £6.5 billion.
+* The combined total spend on film and high-end television (HETV) production was £6.8 billion.
 * This graph shows the figures that were 'first reported' for production spend in each 12-month period. 
 
 </div>
@@ -225,7 +235,7 @@ all_production_first()
 <div id="left">
 
 * Production data is revised every period to account for lags in obtaining complete data across all types of productions.
-* Combined spend for the 12 months to September 2025 was up 14% on revised figures for the previous 12-month period.
+* Combined spend for the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year` was up 13% on revised figures for the previous 12-month period.
 
 </div>
 
@@ -247,7 +257,7 @@ all_production_revised()
 
 <div id="left">
 
-* HETV accounted for 64% of UK production spend in the 12 months to September 2025.
+* HETV accounted for 59% of UK production spend in the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year`.
 
 </div>
 
@@ -280,7 +290,7 @@ film_hetv_production_revised_percentage()
 
 <div id="left">
 
-* UK spend on film production was £2.3 billion, up 6% compared with revised figures for the 12 months ending September 2024.
+* UK spend on film production was £2.8 billion, up 23% compared with revised figures for the 12 months ending `r data_and_vars$latest_month` `r data_and_vars$latest_year - 1`.
 
 </div>
 
@@ -332,7 +342,7 @@ production_breakdown_revised()
 
 <div id="left">
 
-* UK spend on HETV projects was £4.2 billion in the 12 months to September 2025, up 19% on revised figures for the previous 12-month period.
+* UK spend on HETV projects was £4.0 billion in the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year`, up 7% on revised figures for the previous 12-month period.
 
 </div>
 
@@ -355,8 +365,8 @@ production_revised()
 
 <div id="left">
 
-* Spend on all categories of production increased compared with revised figures for the 12 months to September 2024.
-* *Note:* INW and COP spend is combined for the 12 months to September 2021 for reasons of disclosure control. 
+* Spend on all categories of production increased compared with revised figures for the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year - 1`.
+<!-- * *Note:* INW and COP spend is combined for the 12 months to September 2021 for reasons of disclosure control.  -->
 
 </div>
 
@@ -389,9 +399,9 @@ metric <- 'count'
 
 <div id="left">
 
-In the UK, in the 12 months to September 2025:
+In the UK, in the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year`:
 
-* Combined production starts were down 8% on first reported figures for the 12 months to September 2024.
+* Combined production starts were down 3% on first reported figures for the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year - 1`.
 
 </div>
 
@@ -413,7 +423,7 @@ all_production_first()
 
 <div id="left">
 
-* Production count for the 12 months to September 2025 is lower than for the other periods shown here. However, as previously noted, figures are likely to be revised upward in subsequent statistical releases as more data becomes available.
+* Production count for the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year` is lower than for the other periods shown here. However, as previously noted, figures are likely to be revised upward in subsequent statistical releases as more data becomes available.
 
 </div>
 
@@ -435,7 +445,7 @@ all_production_revised()
 
 <div id="left">
 
-* We saw earlier that HETV accounted for the majority of UK production spend in the 12 months to September 2025. In terms of number of productions, however, the split is almost even: 49% for film, 51% for HETV.
+* We saw earlier that HETV accounted for the majority of UK production spend in the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year`. In terms of number of productions, however, film accounted for the majority: 53%.
 
 </div>
 
@@ -468,7 +478,7 @@ film_hetv_production_revised_percentage()
 
 <div id="left">
 
-* 167 films were recorded as starting principal photography in the UK in the 12 months to September 2025.
+* 193 films were recorded as starting principal photography in the UK in the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year`.
 
 </div>
 
@@ -514,7 +524,7 @@ production_breakdown_revised()
 
 <div id="left">
 
-* 171 HETV programmes were recorded as starting principal photography in the UK in the 12 months to September 2025.
+* 168 HETV programmes were recorded as starting principal photography in the UK in the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year`.
 
 </div>
 
@@ -537,8 +547,8 @@ production_revised()
 
 <div id="left">
 
-* HETV programme starts in the 12 months to September 2025 included 19 feature-length single episode productions.
-* *Note:* INW and COP counts are combined for the 12 months to September 2021 for reasons of disclosure control.  
+* HETV programme starts in the 12 months to September 2025 included 14 feature-length single episode productions.
+<!-- * *Note:* INW and COP counts are combined for the 12 months to September 2021 for reasons of disclosure control.   -->
 
 </div>
 
@@ -571,9 +581,9 @@ data_and_vars <- load_data(file_path, sheet_name, type)
 
 <div id="left">
 
-In the 12 months to September 2025:
+In the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year`:
 
-* A total of 585 films received final certification, either under the cultural test or as an official co-production.
+* A total of 613 films received final certification, either under the cultural test or as an official co-production.
 * Certification is required to access UK tax reliefs and credits for audiovisual and video game expenditure.
 
 </div>
@@ -599,7 +609,7 @@ certification()
 
 <div id="left">
 
-* Films achieving final certification in the 12 months to September 2025 had an associated UK production spend of £1.9 billion.
+* Films achieving final certification in the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year` had an associated UK production spend of £2.4 billion.
 * Films and other productions can apply for final certification when they have completed production and are ready to be released.
 
 </div>
@@ -625,7 +635,7 @@ certification()
 
 <div id="left">
 
-* 281 HETV titles received final certification through the cultural test in the 12 months to September 2025.
+* 248 HETV titles received final certification through the cultural test in the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year`.
 * There were two co-productions with final certification but details are not included for disclosure control reasons.
 
 </div>
@@ -651,7 +661,7 @@ certification()
 
 <div id="left">
 
-* HETV productions receiving final certification under the cultural test in the 12 months to September 2025 had a UK production spend of £4.7 billion.
+* HETV productions receiving final certification under the cultural test in the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year` had a UK production spend of £4.3 billion.
 
 </div>
 
@@ -676,7 +686,7 @@ certification()
 
 <div id="left">
 
-* 72 animation television programmes received final certification under the cultural test in the 12 months to September 2025.
+* 74 animation television programmes received final certification under the cultural test in the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year`.
 * There were two co-productions with final certification but details are not included for disclosure control reasons.
 
 </div>
@@ -702,7 +712,7 @@ certification()
 
 <div id="left">
 
-* Animation TV productions receiving final certification under the cultural test in the 12 months to September 2025 had a UK production spend of £196 million.
+* Animation TV productions receiving final certification under the cultural test in the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year` had a UK production spend of £201 million.
 
 </div>
 
@@ -727,7 +737,7 @@ certification()
 
 <div id="left">
 
-* 101 children’s television programmes received final certification under the cultural test in the 12 months to September 2025.
+* 86 children’s television programmes received final certification under the cultural test in the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year`.
 * There were two co-productions with final certification but details are not included for disclosure control reasons.
 
 </div>
@@ -753,7 +763,7 @@ certification()
 
 <div id="left">
 
-* Children's TV productions receiving final certification under the cultural test in the 12 months to September 2025 had a UK production spend of £134 million.
+* Children's TV productions receiving final certification under the cultural test in the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year` had a UK production spend of £199 million.
 
 </div>
 
@@ -778,7 +788,7 @@ certification()
 
 <div id="left">
 
-* 256 video games received final certification in the 12 months to September 2025.
+* 273 video games received final certification in the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year`.
 * Video games can only be certified under the cultural test.
 
 </div>
@@ -804,8 +814,8 @@ certification()
 
 <div id="left">
 
-* Video games receiving final certification in the 12 months to September 2025 had a UK production spend of £736 million.
-* This is the second highest UK spend figure on record.
+* Video games receiving final certification in the 12 months to `r data_and_vars$latest_month` `r data_and_vars$latest_year` had a UK production spend of £618 million.
+* This is the third highest UK spend figure on record.
 
 </div>
 
